@@ -589,6 +589,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
         console.log(legalmoves);
         e.dataTransfer.effectAllowed = 'move';
         e.dataTransfer.setData('img', this.src);
+        legalmoves.forEach(element => {
+            console.log(element+" "+ positions[element[0]][parseInt(element[1])]);
+            if(positions[element[0]][parseInt(element[1])]=="")
+                document.getElementById(element).setAttribute("src","imgs/circle.png");
+        });
     }
 
     function handleDragEnd(e) {
@@ -612,8 +617,15 @@ document.addEventListener('DOMContentLoaded', (event) => {
         this.classList.remove('over');
     }
     function handleDrop(e) {
+        var islegalmove=false;
         e.stopPropagation(); // stops the browser from redirecting.
         if (dragSrcEl !== this) {
+            legalmoves.forEach(element => { //verify if the destination id (this.id) is contained in the array of legal moves, if yes allow the movement
+                if(element==this.id){
+                    islegalmove = true;
+                }
+            });
+            if(islegalmove){
             dragSrcEl.src = this.src;
             this.src = e.dataTransfer.getData('img');
             var srcid = dragSrcEl.id;
@@ -656,15 +668,23 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 
             if(piece[1]=="r" || piece[1]=="k")
                 cancastle[piece[0]]=false;
+
+            legalmoves.forEach(element => {
+                if(positions[element[0]][parseInt(element[1])]=="")
+                    document.getElementById(element).setAttribute("src","imgs/empty.png");
+            });
+            document.getElementById(srcid).setAttribute("src","imgs/empty.png");
             printpositions();
-        }else{
-            var srcid = dragSrcEl.id;
-            var piece = positions[srcid[0]][parseInt(srcid[1])];
-            //if a pawn is moved on the same cell and it's in the starting position enable 2 cell move again
-            if((piece[0]=="w" && srcid[1]=="2" && piece[1]=="p") || (piece[0]=="b" && srcid[1]=="7" && piece[1]=="p"))  
-                pawnsfirstmove[piece[0]][parseInt(srcid[0].charCodeAt(0))-parseInt("A".charCodeAt(0))]=true;
-                
+            }else{
+                var srcid = dragSrcEl.id;
+                var piece = positions[srcid[0]][parseInt(srcid[1])];
+                //if a pawn is moved on the same cell and it's in the starting position enable 2 cell move again
+                if((piece[0]=="w" && srcid[1]=="2" && piece[1]=="p") || (piece[0]=="b" && srcid[1]=="7" && piece[1]=="p"))  
+                    pawnsfirstmove[piece[0]][parseInt(srcid[0].charCodeAt(0))-parseInt("A".charCodeAt(0))]=true;
+                    
+            }
         }
+            
         return false;
     }
         let items = document.querySelectorAll('img.imgdiv');    
