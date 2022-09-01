@@ -2,12 +2,12 @@
 //configuration of the checkboard
 var positions={
     "A":["A","wr","wp","","","","","bp","br"],
-    "B":["B","wh","wp","","","","","bp","bh"],
+    "B":["B","wn","wp","","","","","bp","bn"],
     "C":["C","wb","wp","","","","","bp","bb"],
     "D":["D","wq","wp","","","","","bp","bq"],
     "E":["E","wk","wp","","","","","bp","bk"],
     "F":["F","wb","wp","","","","","bp","bb"],
-    "G":["G","wh","wp","","","","","bp","bh"],
+    "G":["G","wn","wp","","","","","bp","bn"],
     "H":["H","wr","wp","","","","","bp","br"],
     "-1":[" ","1","2","3","4","5","6","7","8"]
 }
@@ -285,7 +285,7 @@ function calculatelegalmoves(piece,cell, extendedcalculation){
          * Calculate the possible moves for a horse
          * Horse move in an L shape
          */
-        case "h":{//piece is horse
+        case "n":{//piece is horse
             legalmoves=[];
             var newcolhorse=[];
             newcolhorse[0] = String.fromCharCode("A".charCodeAt(0)+(col.charCodeAt(0)-"A".charCodeAt(0)+1));
@@ -575,13 +575,43 @@ function calculatelegalmoves(piece,cell, extendedcalculation){
     }
     return legalmoves;
 }
+function removeCircles(legalmoves){
+    legalmoves.forEach(element => {
+        var newimage ="";
+        var image = document.getElementById(element).src.split("/").pop();
+        switch(image){
+            case "circle.png":{newimage="imgs/empty.png";break;}
 
+            case "brc.png":{newimage="imgs/br.png";break;}
+            case "wrc.png":{newimage="imgs/wr.png";break;}
+
+            case "bnc.png":{newimage="imgs/bn.png";break;}
+            case "wnc.png":{newimage="imgs/wn.png";break;}
+
+            case "bbc.png":{newimage="imgs/bb.png";break;}
+            case "wbc.png":{newimage="imgs/wb.png";break;}
+
+            case "bqc.png":{newimage="imgs/bq.png";break;}
+            case "wqc.png":{newimage="imgs/wq.png";break;}
+
+            case "bkc.png":{newimage="imgs/bk.png";break;}
+            case "wkc.png":{newimage="imgs/wk.png";break;}
+
+            case "bpc.png":{newimage="imgs/bp.png";break;}
+            case "wpc.png":{newimage="imgs/wp.png";break;}
+            default:{newimage="imgs/"+image; break;}
+        }
+        document.getElementById(element).setAttribute("src",newimage);
+    });
+}
 document.addEventListener('DOMContentLoaded', (event) => {
     loadChessboard();
     var dragSrcEl;
     var srcpiece;
-    var legalmoves;
+    var legalmoves=[];
     function handleDragStart(e) {
+        removeCircles(legalmoves);
+        
         this.style.opacity = '0.4';
         dragSrcEl = this;
         srcpiece = positions[this.id[0]][parseInt(this.id[1])];
@@ -590,9 +620,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
         e.dataTransfer.effectAllowed = 'move';
         e.dataTransfer.setData('img', this.src);
         legalmoves.forEach(element => {
-            console.log(element+" "+ positions[element[0]][parseInt(element[1])]);
             if(positions[element[0]][parseInt(element[1])]=="")
                 document.getElementById(element).setAttribute("src","imgs/circle.png");
+            else
+                document.getElementById(element).setAttribute("src","imgs/"+positions[element[0]][parseInt(element[1])]+"c.png");
         });
     }
 
@@ -681,8 +712,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 //if a pawn is moved on the same cell and it's in the starting position enable 2 cell move again
                 if((piece[0]=="w" && srcid[1]=="2" && piece[1]=="p") || (piece[0]=="b" && srcid[1]=="7" && piece[1]=="p"))  
                     pawnsfirstmove[piece[0]][parseInt(srcid[0].charCodeAt(0))-parseInt("A".charCodeAt(0))]=true;
-                    
-            }
+                }
+        }else{
+            var srcid = dragSrcEl.id;
+            var piece = positions[srcid[0]][parseInt(srcid[1])];
+            //if a pawn is moved on the same cell and it's in the starting position enable 2 cell move again
+            if((piece[0]=="w" && srcid[1]=="2" && piece[1]=="p") || (piece[0]=="b" && srcid[1]=="7" && piece[1]=="p"))  
+                pawnsfirstmove[piece[0]][parseInt(srcid[0].charCodeAt(0))-parseInt("A".charCodeAt(0))]=true;                
         }
             
         return false;
