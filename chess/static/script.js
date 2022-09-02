@@ -27,6 +27,22 @@ var cancastle = {
     "b":true
 }
 
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
 function loadChessboard(){
     var chessboard = document.getElementById("chessboard");
 
@@ -43,7 +59,7 @@ function loadChessboard(){
             cell.setAttribute("class","chesscell blackback");
 
             var img = document.createElement("img");
-            img.setAttribute("src","imgs/empty.png");
+            img.setAttribute("src","/static/imgs/empty.png");
             img.setAttribute("class","imgdiv");
             img.setAttribute("draggable","true");
             img.setAttribute("id",String.fromCharCode(parseInt('A'.charCodeAt(0))+j)+i);
@@ -57,37 +73,37 @@ function loadChessboard(){
 }
 function loadPieces(){ 
     //rooks
-    document.querySelectorAll("#A1")[0].setAttribute("src","imgs/wr.png");
-    document.querySelectorAll("#H1")[0].setAttribute("src","imgs/wr.png");
+    document.querySelectorAll("#A1")[0].setAttribute("src","/static/imgs/wr.png");
+    document.querySelectorAll("#H1")[0].setAttribute("src","/static/imgs/wr.png");
 
-    document.querySelectorAll("#A8")[0].setAttribute("src","imgs/br.png");
-    document.querySelectorAll("#H8")[0].setAttribute("src","imgs/br.png");
+    document.querySelectorAll("#A8")[0].setAttribute("src","/static/imgs/br.png");
+    document.querySelectorAll("#H8")[0].setAttribute("src","/static/imgs/br.png");
 
     //knights
-    document.querySelectorAll("#B1")[0].setAttribute("src","imgs/wn.png");
-    document.querySelectorAll("#G1")[0].setAttribute("src","imgs/wn.png");
+    document.querySelectorAll("#B1")[0].setAttribute("src","/static/imgs/wn.png");
+    document.querySelectorAll("#G1")[0].setAttribute("src","/static/imgs/wn.png");
     
-    document.querySelectorAll("#B8")[0].setAttribute("src","imgs/bn.png");
-    document.querySelectorAll("#G8")[0].setAttribute("src","imgs/bn.png");
+    document.querySelectorAll("#B8")[0].setAttribute("src","/static/imgs/bn.png");
+    document.querySelectorAll("#G8")[0].setAttribute("src","/static/imgs/bn.png");
 
     //bishops
-    document.querySelectorAll("#C1")[0].setAttribute("src","imgs/wb.png");
-    document.querySelectorAll("#F1")[0].setAttribute("src","imgs/wb.png");
+    document.querySelectorAll("#C1")[0].setAttribute("src","/static/imgs/wb.png");
+    document.querySelectorAll("#F1")[0].setAttribute("src","/static/imgs/wb.png");
     
-    document.querySelectorAll("#C8")[0].setAttribute("src","imgs/bb.png");
-    document.querySelectorAll("#F8")[0].setAttribute("src","imgs/bb.png");
+    document.querySelectorAll("#C8")[0].setAttribute("src","/static/imgs/bb.png");
+    document.querySelectorAll("#F8")[0].setAttribute("src","/static/imgs/bb.png");
 
     //queens and kings
-    document.querySelectorAll("#D1")[0].setAttribute("src","imgs/wq.png");
-    document.querySelectorAll("#E1")[0].setAttribute("src","imgs/wk.png");
+    document.querySelectorAll("#D1")[0].setAttribute("src","/static/imgs/wq.png");
+    document.querySelectorAll("#E1")[0].setAttribute("src","/static/imgs/wk.png");
     
-    document.querySelectorAll("#D8")[0].setAttribute("src","imgs/bq.png");
-    document.querySelectorAll("#E8")[0].setAttribute("src","imgs/bk.png");
+    document.querySelectorAll("#D8")[0].setAttribute("src","/static/imgs/bq.png");
+    document.querySelectorAll("#E8")[0].setAttribute("src","/static/imgs/bk.png");
 
     //pawns 
     for(var i=0;i<8;i++){
-        document.querySelectorAll("#"+(String.fromCharCode(parseInt('A'.charCodeAt(0))+i)+"2"))[0].setAttribute("src","imgs/wp.png");
-        document.querySelectorAll("#"+(String.fromCharCode(parseInt('A'.charCodeAt(0))+i)+"7"))[0].setAttribute("src","imgs/bp.png");
+        document.querySelectorAll("#"+(String.fromCharCode(parseInt('A'.charCodeAt(0))+i)+"2"))[0].setAttribute("src","/static/imgs/wp.png");
+        document.querySelectorAll("#"+(String.fromCharCode(parseInt('A'.charCodeAt(0))+i)+"7"))[0].setAttribute("src","/static/imgs/bp.png");
     }
 }
 //print on console the chessboard
@@ -580,26 +596,26 @@ function removeCircles(legalmoves){
         var newimage ="";
         var image = document.getElementById(element).src.split("/").pop();
         switch(image){
-            case "circle.png":{newimage="imgs/empty.png";break;}
+            case "circle.png":{newimage="/static/imgs/empty.png";break;}
 
-            case "brc.png":{newimage="imgs/br.png";break;}
-            case "wrc.png":{newimage="imgs/wr.png";break;}
+            case "brc.png":{newimage="/static/imgs/br.png";break;}
+            case "wrc.png":{newimage="/static/imgs/wr.png";break;}
 
-            case "bnc.png":{newimage="imgs/bn.png";break;}
-            case "wnc.png":{newimage="imgs/wn.png";break;}
+            case "bnc.png":{newimage="/static/imgs/bn.png";break;}
+            case "wnc.png":{newimage="/static/imgs/wn.png";break;}
 
-            case "bbc.png":{newimage="imgs/bb.png";break;}
-            case "wbc.png":{newimage="imgs/wb.png";break;}
+            case "bbc.png":{newimage="/static/imgs/bb.png";break;}
+            case "wbc.png":{newimage="/static/imgs/wb.png";break;}
 
-            case "bqc.png":{newimage="imgs/bq.png";break;}
-            case "wqc.png":{newimage="imgs/wq.png";break;}
+            case "bqc.png":{newimage="/static/imgs/bq.png";break;}
+            case "wqc.png":{newimage="/static/imgs/wq.png";break;}
 
-            case "bkc.png":{newimage="imgs/bk.png";break;}
+            case "bkc.png":{newimage="/static/imgs/bk.png";break;}
             case "wkc.png":{newimage="imgs/wk.png";break;}
 
-            case "bpc.png":{newimage="imgs/bp.png";break;}
-            case "wpc.png":{newimage="imgs/wp.png";break;}
-            default:{newimage="imgs/"+image; break;}
+            case "bpc.png":{newimage="/static/imgs/bp.png";break;}
+            case "wpc.png":{newimage="/static/imgs/wp.png";break;}
+            default:{newimage="/static/imgs/"+image; break;}
         }
         document.getElementById(element).setAttribute("src",newimage);
     });
@@ -621,9 +637,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
         e.dataTransfer.setData('img', this.src);
         legalmoves.forEach(element => {
             if(positions[element[0]][parseInt(element[1])]=="")
-                document.getElementById(element).setAttribute("src","imgs/circle.png");
+                document.getElementById(element).setAttribute("src","/static/imgs/circle.png");
             else
-                document.getElementById(element).setAttribute("src","imgs/"+positions[element[0]][parseInt(element[1])]+"c.png");
+                document.getElementById(element).setAttribute("src","/static/imgs/"+positions[element[0]][parseInt(element[1])]+"c.png");
         });
     }
 
@@ -676,23 +692,23 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
             //castle
             if(cancastle[piece[0]] && piece[1]=="k" && destid=="G1"){
-                document.getElementById("F1").setAttribute("src","imgs/wr.png");
-                document.getElementById("H1").setAttribute("src","imgs/empty.png");
+                document.getElementById("F1").setAttribute("src","/static/imgs/wr.png");
+                document.getElementById("H1").setAttribute("src","/static/imgs/empty.png");
                 positions["H"][1]="";
                 positions["F"][1]="wr";
             }else if(cancastle[piece[0]] && piece[1]=="k" && destid=="C1"){
-                document.getElementById("D1").setAttribute("src","imgs/wr.png");
-                document.getElementById("A1").setAttribute("src","imgs/empty.png");
+                document.getElementById("D1").setAttribute("src","/static/imgs/wr.png");
+                document.getElementById("A1").setAttribute("src","/static/imgs/empty.png");
                 positions["A"][1]="";
                 positions["D"][1]="wr";
             }else if(cancastle[piece[0]] && piece[1]=="k" && destid=="G8"){
-                document.getElementById("F8").setAttribute("src","imgs/br.png");
-                document.getElementById("H8").setAttribute("src","imgs/empty.png");
+                document.getElementById("F8").setAttribute("src","/static/imgs/br.png");
+                document.getElementById("H8").setAttribute("src","/static/imgs/empty.png");
                 positions["H"][8]="";
                 positions["F"][8]="br";
             }else if(cancastle[piece[0]] && piece[1]=="k" && destid=="C8"){
-                document.getElementById("D8").setAttribute("src","imgs/br.png");
-                document.getElementById("A8").setAttribute("src","imgs/empty.png");
+                document.getElementById("D8").setAttribute("src","/static/imgs/br.png");
+                document.getElementById("A8").setAttribute("src","/static/imgs/empty.png");
                 positions["A"][8]="";
                 positions["D"][8]="br";
             }
@@ -702,9 +718,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
             legalmoves.forEach(element => {
                 if(positions[element[0]][parseInt(element[1])]=="")
-                    document.getElementById(element).setAttribute("src","imgs/empty.png");
+                    document.getElementById(element).setAttribute("src","/static/imgs/empty.png");
             });
-            document.getElementById(srcid).setAttribute("src","imgs/empty.png");
+            document.getElementById(srcid).setAttribute("src","/static/imgs/empty.png");
             printpositions();
             }else{
                 var srcid = dragSrcEl.id;
@@ -720,7 +736,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
             if((piece[0]=="w" && srcid[1]=="2" && piece[1]=="p") || (piece[0]=="b" && srcid[1]=="7" && piece[1]=="p"))  
                 pawnsfirstmove[piece[0]][parseInt(srcid[0].charCodeAt(0))-parseInt("A".charCodeAt(0))]=true;                
         }
-            
+        
+        fetch("/test/",{method:"POST",body:JSON.stringify({'spas':true}),headers: { "X-CSRFToken": CSRF_TOKEN }}).then((resp)=>resp.json()).then(function(data){
+            console.log(data);
+        });
         return false;
     }
         let items = document.querySelectorAll('img.imgdiv');    

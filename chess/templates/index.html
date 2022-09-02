@@ -1,10 +1,16 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <script src="script.js"></script>
-        <link rel="stylesheet" href="style.css">
+        {% load static%}
+        <!--<script src="{% static 'script.js'%}"></script>-->
+        <script src="{% static 'script.js'%}"></script>
+        <link rel="stylesheet" href="{% static 'style.css'%}">
+        
+        <script>
+            const CSRF_TOKEN = '{{ csrf_token }}';
+        </script>
     </head>
-    <body>
+    <body><!--onload="test()"-->
         <div class="chessboardcontainer">
             <table style="margin:auto">
                 <tr>
