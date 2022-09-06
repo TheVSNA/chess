@@ -16,6 +16,7 @@ fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
 board = chess.Board(fen)
 engine = chess.engine.SimpleEngine.popen_uci(os.path.join(os.getcwd(),"mychess","stockfish_15_win_x64_avx2","stockfish_15_x64_avx2.exe"))
 
+#reset the chessboard position (called every time the page is loaded/refreshed)
 def reset(request):
     global board, engine
     board = chess.Board(fen)
@@ -41,43 +42,31 @@ def evaluateMove(request):
     moves_t = moves_t.replace(" ", "")
     moves_t = moves_t.split(",")
 
-    """cont =0
-    for el in board.legal_moves:    #evaluate all the legal moves to find the best 3
-        info = engine.analyse(board, chess.engine.Limit(time=1), root_moves=[el])
-        t = info["score"]
-        score = t.relative.score(mate_score=32000)
-        print(el," ",score)
-        best_moves.append({'move':moves_t[cont],'score':score})
-        cont+=1
+    success = False
+    timelimit = 1   #if the analyse function cannot calculate the next moves with a given time, try double the time, until it can calculate the moves
+    best_enemy_move = "NAN"
+    best_response_to_enemy_best_move="NAN"
+    while(not success and timelimit<64):
+        evaluation = engine.analyse(board, chess.engine.Limit(time=timelimit), root_moves=[chess.Move.from_uci(move)])
+        #print(evaluation)
+        t = evaluation["score"]
+        if(len(evaluation["pv"])>2):
+            best_enemy_move = evaluation["pv"][1].uci()
+            best_response_to_enemy_best_move= evaluation["pv"][2].uci()
+            success=True
+        else:
+            timelimit = timelimit*2
+            print("timelimit is: ",timelimit)
+        if(t.is_mate()):
+            success=True
 
-    best_moves.sort(key=lambda x: x["score"],reverse=True)  #sort the moves based on their score
-    top_3_moves = []
-    max = 3 if len(best_moves)>3 else len(best_moves)
-    
-    for i in range(max):
-        top_3_moves.append({
-            'move':best_moves[i]["move"],
-            'score':calculateWinningChances(best_moves[i]["score"])
-        })"""
-
-    evaluation = engine.analyse(board, chess.engine.Limit(time=1), root_moves=[chess.Move.from_uci(move)])
-    print(evaluation)
-    t = evaluation["score"]
-    if(len(evaluation["pv"])>2):
-        best_enemy_move = evaluation["pv"][1].uci()
-        best_response_to_enemy_best_move= evaluation["pv"][2].uci()
-    elif(len(evaluation["pv"])==2):
-        best_enemy_move = evaluation["pv"][1].uci()
-        best_response_to_enemy_best_move= "NAN"
-    else:
-        best_enemy_move = "NAN"
-        best_response_to_enemy_best_move= "NAN"
-        
     print("Best enemy move: ",best_enemy_move)
     print("Best response: ",best_response_to_enemy_best_move)
     score = t.relative.score(mate_score=32000)
     
     percentage_score = calculateWinningChances(score)
+    if percentage_score>1:
+        percentage_score=1
     score = score if board.turn else -score
     board.push(chess.Move.from_uci(move))
 
@@ -85,9 +74,12 @@ def evaluateMove(request):
         'board_evaluation':(percentage_score*100),
         'cp_evaluation': score,
         'best_enemy_move':best_enemy_move,
-        'best_response_to_enemy_best_move':best_response_to_enemy_best_move
+        'best_response_to_enemy_best_move':best_response_to_enemy_best_move,
+        'is_checkmate':board.is_checkmate(),
+        'is_stalemate':board.is_stalemate(),
+        'is_insufficient_material':board.is_insufficient_material()
     }
-    print(board)
+    print(response_data)
     return HttpResponse(json.dumps(response_data), content_type="application/json")
 
 #see https://www.chessprogramming.org/Pawn_Advantage,_Win_Percentage,_and_Elo
