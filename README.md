@@ -7,4 +7,6 @@ The evaluation of the board is given in cp (centi-pawns) and in winning percenta
 
 A huge thanks goes to:
 * The artist who made the pieces icons: Jurgenwesterhof from Wikipedia https://commons.wikimedia.org/wiki/File:Chess_Pieces_Sprite.svg
-* The team that created the executable for Stockfish https://github.com/official-stockfish/Stockfish/tree/e6e324eb28fd49c1fc44b3b65784f85a773ec61c
+* The team that created the executable for Stockfish https://github.com/official-stockfish/Stockfish/tree/e6e324eb28fd49c1fc44b3b65784f85a773ec61c 
+
+(The project uses a non official build of stockfish (.exe file) use it at your own risk)
