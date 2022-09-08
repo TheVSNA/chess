@@ -43,20 +43,25 @@ def evaluateMove(request):
     moves_t = moves_t.split(",")
 
     success = False
+    iserror = False
     timelimit = 1   #if the analyse function cannot calculate the next moves with a given time, try double the time, until it can calculate the moves
     best_enemy_move = "NAN"
     best_response_to_enemy_best_move="NAN"
-    while(not success and timelimit<64):
+    while(not success and timelimit<32 and not iserror):
         evaluation = engine.analyse(board, chess.engine.Limit(time=timelimit), root_moves=[chess.Move.from_uci(move)])
         #print(evaluation)
         t = evaluation["score"]
-        if(len(evaluation["pv"])>2):
-            best_enemy_move = evaluation["pv"][1].uci()
-            best_response_to_enemy_best_move= evaluation["pv"][2].uci()
-            success=True
-        else:
-            timelimit = timelimit*2
-            print("timelimit is: ",timelimit)
+        try:
+            if(len(evaluation["pv"])>2):
+                best_enemy_move = evaluation["pv"][1].uci()
+                best_response_to_enemy_best_move= evaluation["pv"][2].uci()
+                success=True
+            else:
+                timelimit = timelimit*2
+                print("timelimit is: ",timelimit)
+        except:
+            print("Errore")
+            iserror = True
         if(t.is_mate()):
             success=True
 

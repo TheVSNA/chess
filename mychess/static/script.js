@@ -159,6 +159,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
         getLegalMoves().then( response => { //get legal moves from backend
             legalmoves = response;
+            console.log(legalmoves);
             e.dataTransfer.effectAllowed = 'move';
             origin_piece = this.src;
             legalmoves.forEach(element => {
@@ -199,7 +200,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
         e.stopPropagation(); // stops the browser from redirecting.
         if (dragSrcEl !== this) {
             legalmoves.forEach(element => { //verify if the destination id (this.id) is contained in the array of legal moves, if yes allow the movement
-                if(element.toUpperCase()==dragSrcEl.id+""+this.id){
+                element = element.toUpperCase();
+                if(element[0]+element[1]+element[2]+element[3]==dragSrcEl.id+""+this.id){   //cannot put element = dragSrcEl.id+""+this.id because pawn promotion code has 5 characters (the fifth indicates the promotion piece q,r,b,n)
                     islegalmove = true;
                 }
             });
@@ -252,6 +254,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
                     positions["D"][8]="br";
                 }
 
+                
+
                 legalmoves.forEach(element => {
                     element = element.toUpperCase();
                     if(positions[element[2]][parseInt(element[3])]==""){
@@ -262,50 +266,15 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 document.getElementById(srcid).setAttribute("src","/static/imgs/empty.png");
                 printpositions();
                 var move = srcid+destid+"";
-                console.log("Move: "+move);
-                fetch("/evaluate/",{method:"POST",body:JSON.stringify({'move':move}),headers: { "X-CSRFToken": CSRF_TOKEN }}).then((resp)=>resp.json()).then(function(data){
-                    var board_evaluation = data["board_evaluation"];
-                    var cp_evaluation = data["cp_evaluation"];
-                    var best_enemy_move = data["best_enemy_move"];
-                    var best_response_to_enemy_best_move = data["best_response_to_enemy_best_move"];
-                    var is_checkmate = data["is_checkmate"];
-                    var is_stalemate = data["is_stalemate"];
-                    var is_insufficient = data["is_insufficient_material"];
-                    if(is_checkmate){
-                        if(white_move)
-                            alert("White wins!");
-                        else
-                            alert("Black wins!");
-                    }
-                    else if(is_stalemate){
-                        alert("Draw for stalemate!");
-                    }
-                    else if(is_insufficient){
-                        alert("Draw for insufficient material!");
-                    }
-                    document.getElementById("best_enemy_move").innerText=best_enemy_move;
-                    document.getElementById("best_response").innerText=best_response_to_enemy_best_move;
 
-                    var bar = document.getElementById("myBar");
-                    if(white_move == true){
-                        bar.setAttribute("style","height:"+(100-board_evaluation)+"%");
-                    }else{
-                        bar.setAttribute("style","height:"+board_evaluation+"%");
-                    }
-                    if(cp_evaluation>0){
-                        document.getElementById("cp_white").innerText=(cp_evaluation/100);
-                        document.getElementById("cp_black").innerText="";
-                    }else if(cp_evaluation<0){
-                        document.getElementById("cp_white").innerText="";
-                        document.getElementById("cp_black").innerText=(-cp_evaluation/100);
-                    }else{
-                        document.getElementById("cp_white").innerText="";
-                        document.getElementById("cp_black").innerText="";
-                    }
-
-                    white_move = !white_move;
-                });
-            
+                if(piece == "wp" && destid[1] == "8"){
+                    console.log("White is promoting");
+                    showPromotionWindow("w",srcid,destid);
+                }else if(piece=="bp" && destid[1]=="1"){
+                    console.log("Black is promoting");
+                    showPromotionWindow("b",srcid,destid);
+                }else
+                    evaluate(move);            
             }
         }        
         return false;
@@ -327,5 +296,117 @@ function reset(){
 function moveIsEnPassant(move){
     return fetch("moveisenpassant/",{method:"POST",body:JSON.stringify({'move':move}),headers: { "X-CSRFToken": CSRF_TOKEN }}).then((resp)=>resp.json()).then(function(data){
        return data; 
+    });
+}
+
+function showPromotionWindow(color,srcid, destid){
+    console.log(color+" "+destid);
+    var divcontainer = document.getElementById("promotioncontainer");
+
+    var promotionWindow = document.createElement("table");
+    promotionWindow.setAttribute("id","promotionwindow");
+    promotionWindow.setAttribute("class","promotionwindow");
+
+    var tr = document.createElement("tr");
+    tr.setAttribute("class","chessrow");
+    var td = document.createElement("td");
+    td.setAttribute("class","chesscell");
+    var img = document.createElement("img");
+    img.setAttribute("src","/static/imgs/"+color+"r.png");
+    img.setAttribute("class","imgdiv");
+    img.setAttribute("onclick","promote('"+srcid+"','"+destid+"','r','"+color+"')");
+    td.appendChild(img);
+    tr.appendChild(td);
+    promotionWindow.appendChild(tr);
+
+    var tr = document.createElement("tr");
+    tr.setAttribute("class","chessrow");
+    var td = document.createElement("td");
+    td.setAttribute("class","chesscell");
+    var img = document.createElement("img");
+    img.setAttribute("src","/static/imgs/"+color+"b.png");
+    img.setAttribute("class","imgdiv");
+    img.setAttribute("onclick","promote('"+srcid+"','"+destid+"','b','"+color+"')");
+    td.appendChild(img);
+    tr.appendChild(td);
+    promotionWindow.appendChild(tr);
+
+    var tr = document.createElement("tr");
+    tr.setAttribute("class","chessrow");
+    var td = document.createElement("td");
+    td.setAttribute("class","chesscell");
+    var img = document.createElement("img");
+    img.setAttribute("src","/static/imgs/"+color+"n.png");
+    img.setAttribute("class","imgdiv");
+    img.setAttribute("onclick","promote('"+srcid+"','"+destid+"','n','"+color+"')");
+    td.appendChild(img);
+    tr.appendChild(td);
+    promotionWindow.appendChild(tr);
+
+    var tr = document.createElement("tr");
+    tr.setAttribute("class","chessrow");
+    var td = document.createElement("td");
+    td.setAttribute("class","chesscell");
+    var img = document.createElement("img");
+    img.setAttribute("src","/static/imgs/"+color+"q.png");
+    img.setAttribute("class","imgdiv");
+    img.setAttribute("onclick","promote('"+srcid+"','"+destid+"','q','"+color+"')");
+    td.appendChild(img);
+    tr.appendChild(td);
+    promotionWindow.appendChild(tr);
+
+    divcontainer.appendChild(promotionWindow);
+}
+
+function promote(srcid,destid,piece,color){
+    var image = "/static/imgs/"+color+piece+".png";
+    document.getElementById(destid).setAttribute("src",image);
+    positions[destid[0]][destid[1]]=color+piece;
+    document.getElementById("promotionwindow").remove();
+    evaluate(srcid+destid+piece);
+}
+
+function evaluate(move){
+    console.log("Move: "+move);
+    fetch("/evaluate/",{method:"POST",body:JSON.stringify({'move':move}),headers: { "X-CSRFToken": CSRF_TOKEN }}).then((resp)=>resp.json()).then(function(data){
+        var board_evaluation = data["board_evaluation"];
+        var cp_evaluation = data["cp_evaluation"];
+        var best_enemy_move = data["best_enemy_move"];
+        var best_response_to_enemy_best_move = data["best_response_to_enemy_best_move"];
+        var is_checkmate = data["is_checkmate"];
+        var is_stalemate = data["is_stalemate"];
+        var is_insufficient = data["is_insufficient_material"];
+        if(is_checkmate){
+            if(white_move)
+                alert("White wins!");
+            else
+                alert("Black wins!");
+        }
+        else if(is_stalemate){
+            alert("Draw for stalemate!");
+        }
+        else if(is_insufficient){
+            alert("Draw for insufficient material!");
+        }
+        document.getElementById("best_enemy_move").innerText=best_enemy_move;
+        document.getElementById("best_response").innerText=best_response_to_enemy_best_move;
+
+        var bar = document.getElementById("myBar");
+        if(white_move == true){
+            bar.setAttribute("style","height:"+(100-board_evaluation)+"%");
+        }else{
+            bar.setAttribute("style","height:"+board_evaluation+"%");
+        }
+        if(cp_evaluation>0){
+            document.getElementById("cp_white").innerText=(cp_evaluation/100);
+            document.getElementById("cp_black").innerText="";
+        }else if(cp_evaluation<0){
+            document.getElementById("cp_white").innerText="";
+            document.getElementById("cp_black").innerText=(-cp_evaluation/100);
+        }else{
+            document.getElementById("cp_white").innerText="";
+            document.getElementById("cp_black").innerText="";
+        }
+        white_move = !white_move;
     });
 }
