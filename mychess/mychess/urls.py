@@ -15,13 +15,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from mychess.views import home, evaluateMove,getLegalMoves,reset,moveisenpassant
+from mychess.views import move_evaluation, evaluateMove,getLegalMoves,reset,moveisenpassant,freemoves,home
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',home),
-    path('evaluate/',evaluateMove),
-    path('legal_moves/',getLegalMoves),
-    path('reset/',reset),
-    path('moveisenpassant/',moveisenpassant)
+    path('move_evaluation/',move_evaluation),
+    path('move_evaluation/evaluate/',evaluateMove),
+    path('move_evaluation/legal_moves/',getLegalMoves),
+    path('move_evaluation/reset/',reset),
+    path('move_evaluation/moveisenpassant/',moveisenpassant),
+    path('freemoves/',freemoves),
+    path('',home)
 ]

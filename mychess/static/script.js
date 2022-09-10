@@ -138,7 +138,7 @@ function removeCircles(legalmoves){
 //get the set of legal moves from backend
 function getLegalMoves(){
     var legal_moves = [];
-    return fetch("/legal_moves/",{method:"GET",headers: { "X-CSRFToken": CSRF_TOKEN }}).then((resp)=>resp.json()).then(function(data){
+    return fetch("legal_moves/",{method:"GET",headers: { "X-CSRFToken": CSRF_TOKEN }}).then((resp)=>resp.json()).then(function(data){
         legal_moves=data["legalmoves"];
         return legal_moves;
     });
@@ -291,7 +291,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 });
 
 function reset(){
-    fetch("reset/");
+    fetch("reset/",{method:"POST",headers: { "X-CSRFToken": CSRF_TOKEN }});
 }
 function moveIsEnPassant(move){
     return fetch("moveisenpassant/",{method:"POST",body:JSON.stringify({'move':move}),headers: { "X-CSRFToken": CSRF_TOKEN }}).then((resp)=>resp.json()).then(function(data){
@@ -368,7 +368,7 @@ function promote(srcid,destid,piece,color){
 
 function evaluate(move){
     console.log("Move: "+move);
-    fetch("/evaluate/",{method:"POST",body:JSON.stringify({'move':move}),headers: { "X-CSRFToken": CSRF_TOKEN }}).then((resp)=>resp.json()).then(function(data){
+    fetch("evaluate/",{method:"POST",body:JSON.stringify({'move':move}),headers: { "X-CSRFToken": CSRF_TOKEN }}).then((resp)=>resp.json()).then(function(data){
         var board_evaluation = data["board_evaluation"];
         var cp_evaluation = data["cp_evaluation"];
         var best_enemy_move = data["best_enemy_move"];

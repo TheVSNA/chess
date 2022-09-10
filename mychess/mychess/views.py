@@ -21,11 +21,14 @@ def reset(request):
     global board, engine
     board = chess.Board(fen)
     engine = chess.engine.SimpleEngine.popen_uci(os.path.join(os.getcwd(),"mychess","stockfish_15_win_x64_avx2","stockfish_15_x64_avx2.exe"))
-    return HttpResponse(json.dumps({}), content_type="application/json")
+    return render(request,"move_evaluation.html")
 
 
 def home(request):
     return render(request,"index.html")
+
+def move_evaluation(request):
+    return render(request,"move_evaluation.html")
 
 
 def evaluateMove(request):
@@ -117,3 +120,7 @@ def moveisenpassant(request):
         if board.is_en_passant(chess.Move.from_uci(move)):
             iscapture["enpassant"]=True
     return HttpResponse(json.dumps(iscapture),content_type="application/json")
+
+
+def freemoves(request):
+    return render(request,"free_moves.html")
